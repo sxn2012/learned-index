@@ -26,33 +26,39 @@ import random
 #3.range_max: the maximun key
 #output dataset: two columns (key,location)
 def data_generation(len_num,range_min,range_max):
-	datalist=[]
+	dataset=set()
 	for i in range(0,len_num):
 		x=random.randint(range_min,range_max)
-		datalist.append(x)
-	for i in range(0,len(datalist)):
-		temp=False
-		for j in range(0,len(datalist)-i-1):
-			if datalist[j]>datalist[j+1]:
-				t=datalist[j]
-				datalist[j]=datalist[j+1]
-				datalist[j+1]=t
-				temp=True
-		if not temp:
-			break
+		while x in dataset:
+			x=random.randint(range_min,range_max)
+		dataset.add(x)
+	# for i in range(0,len(datalist)):
+	# 	temp=False
+	# 	for j in range(0,len(datalist)-i-1):
+	# 		if datalist[j]>datalist[j+1]:
+	# 			t=datalist[j]
+	# 			datalist[j]=datalist[j+1]
+	# 			datalist[j+1]=t
+	# 			temp=True
+	# 	if not temp:
+	# 		break
 	current_path=os.path.abspath(os.curdir)
 	f=codecs.open(os.path.join(current_path,"data.csv"), "w", "utf-8")
-	for i in range(0,len(datalist)):
-		f.write(str(datalist[i])+","+str(i)+"\n")
+	i=0
+	datalist=list(dataset)
+	datalist.sort()
+	for ele in datalist:
+		f.write(str(ele)+","+str(i)+"\n")
+		i=i+1
 	f.close()
 	return
 
 """- Provide some value and generate the dataset"""
 
-minkey=1000
-maxkey=9999
-keynum=3000
-data_generation(3000,1000,9999)
+minkey=0
+maxkey=2147483647
+keynum=500000
+data_generation(keynum,minkey,maxkey)
 
 """## Step 2: Split the dataset into training, development and testing dataset"""
 
@@ -137,6 +143,16 @@ for ele in strlist:
         continue
     testkeys.append(int(temp[0]))
     testres.append(int(temp[1]))
+
+# It is very time and space consuming to build models based on the entire dataset
+# Instead, we divide the dataset into 3 parts (training, dev, testing)
+# We build and train models based on training set, and give index predictions based on testing set
+
+trainkeys.extend(devkeys)
+trainres.extend(devres)
+trainkeys.extend(testkeys)
+trainres.extend(testres)
+
 print("training data size:",len(trainkeys))
 print("development data size:",len(devkeys))
 print("testing data size:",len(testkeys))
@@ -160,28 +176,29 @@ time_interval=t2-t1
 print("time interval for building model:"+str(time_interval*1000)+" ms")
 devpre=reg.predict(np.array(devkeys).reshape(-1,1)).reshape(1,-1).tolist()[0]
 for i in range(0,len(devpre)):
-    devpre[i]=abs(int(devpre[i]))%keynum
+    devpre[i]=abs(int(devpre[i]))
 mse_LR=mean_squared_error(devres,devpre)
-print("log MSE dev: ",round(math.log(mse_LR,2),3))
+print("MSE dev: ",mse_LR)
 t1=time.time()
 testpre=reg.predict(np.array(testkeys).reshape(-1,1)).reshape(1,-1).tolist()[0]
 for i in range(0,len(testpre)):
-    testpre[i]=abs(int(testpre[i]))%keynum
+    testpre[i]=abs(int(testpre[i]))
 t2=time.time()
 time_interval=t2-t1
-print("time interval for indexing data:"+str(time_interval*1000)+" ms")
+print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
 # print("log MSE test: ",round(math.log(1+mean_squared_error(testres,testpre),2),3))
 
 import matplotlib.pyplot as plt
 x=np.array(trainkeys).reshape(-1,1)
 y=np.array(trainres).reshape(-1,1)
-x1=np.array([1000, 10000]).reshape(-1,1)
+x1=np.array([0, 2147483647]).reshape(-1,1)
 y1=reg.predict(x1)
 plt.plot(x, y, 'r.',markersize =1)
 plt.title('linear regression')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.axis([1000, 10000, 0, 3000])
+plt.axis([0, 2147483647, 0, 5000000])
 plt.grid(True)
 plt.plot(x1, y1,label = 'linear',lw=1)
 plt.legend()
@@ -189,16 +206,25 @@ plt.legend()
 import matplotlib.pyplot as plt
 x=np.array(devkeys).reshape(-1,1)
 y=np.array(devres).reshape(-1,1)
-x1=np.array([1000, 10000]).reshape(-1,1)
+x1=np.array([0, 2147483647]).reshape(-1,1)
 y1=reg.predict(x1)
 plt.plot(x, y, 'r.',markersize =1)
 plt.title('linear regression')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.axis([1000, 10000, 0, 3000])
+plt.axis([0, 2147483647, 0, 5000000])
 plt.grid(True)
 plt.plot(x1, y1,label = 'linear',lw=1)
 plt.legend()
+
+from sklearn.externals import joblib
+joblib.dump(reg, "linear_regression.model")
+model = joblib.load("linear_regression.model")
+results = model.predict(np.array(testkeys).reshape(-1,1)).reshape(1,-1).tolist()[0]
+for i in range(0,len(results)):
+    results[i]=abs(int(results[i]))
+print(results)
+print(testres)
 
 """### Build a SVR model"""
 
@@ -226,6 +252,10 @@ plt.legend()
 """- SVR: kernel=linear"""
 
 from sklearn.svm import SVR
+import numpy as np
+from sklearn.metrics import mean_squared_error 
+import math
+import time
 print("Support Vector Regression Model: kernel=linear")
 t1=time.time()
 clf = SVR(kernel='linear')
@@ -247,6 +277,10 @@ time_interval_linear=time_interval_1+time_interval_2
 """- SVM: kernel=poly"""
 
 from sklearn.svm import SVR
+import numpy as np
+from sklearn.metrics import mean_squared_error 
+import math
+import time
 print("Support Vector Regression Model: kernel=poly")
 t1=time.time()
 clf = SVR(kernel='poly')
@@ -271,6 +305,10 @@ time_interval_poly=time_interval_1+time_interval_2
 """- SVM: kernel=rbf"""
 
 from sklearn.svm import SVR
+import numpy as np
+from sklearn.metrics import mean_squared_error 
+import math
+import time
 print("Support Vector Regression Model: kernel=rbf")
 t1=time.time()
 clf = SVR(kernel='rbf')
@@ -295,6 +333,10 @@ time_interval_rbf=time_interval_1+time_interval_2
 """- SVM: kernel=sigmoid"""
 
 from sklearn.svm import SVR
+import numpy as np
+from sklearn.metrics import mean_squared_error 
+import math
+import time
 print("Support Vector Regression Model: kernel=sigmoid")
 t1=time.time()
 clf = SVR(kernel='sigmoid')
@@ -317,6 +359,10 @@ print("time interval for indexing data:"+str(time_interval_2*1000)+" ms")
 time_interval_sigmoid=time_interval_1+time_interval_2
 
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import mean_squared_error 
+import math
+import time
 kernels_list = ['linear','poly','rbf','sigmoid']
 MSE_list = [MSE_linear, MSE_poly, MSE_rbf, MSE_sigmoid]
 plt.title('SVM-MSE(log)')

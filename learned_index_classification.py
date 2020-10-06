@@ -145,6 +145,17 @@ for ele in strlist:
         continue
     testkeys.append(int(temp[0]))
     testres.append(int(temp[1]))
+
+# It is very time and space consuming to build models based on the entire dataset
+# Instead, we divide the dataset into 3 parts (training, dev, testing)
+# We build and train models based on training set, and give index predictions based on testing set
+
+trainkeys.extend(devkeys)
+trainres.extend(devres)
+trainkeys.extend(testkeys)
+trainres.extend(testres)
+
+
 print("training data size:",len(trainkeys))
 print("development data size:",len(devkeys))
 print("testing data size:",len(testkeys))
@@ -155,6 +166,7 @@ Y_train=np.array(trainres).reshape(-1,1)
 X_dev=np.array(devkeys).reshape(-1,1)
 Y_dev=np.array(devres).reshape(-1,1)
 X_test=np.array(testkeys).reshape(-1,1)
+Y_test=np.array(testres).reshape(-1,1)
 
 """Step 4: Build a model
 
@@ -177,7 +189,15 @@ t1=time.time()
 testpre=neigh.predict(X_test)#.reshape(1,-1).tolist()[0]
 t2=time.time()
 time_interval=t2-t1
-print("time interval for indexing data:"+str(time_interval*1000)+" ms")
+print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
+
+from sklearn.externals import joblib
+joblib.dump(neigh, "knn.model")
+model = joblib.load("knn.model")
+results = model.predict(X_test)
+print(results)
+print(Y_test)
 
 """- Naive Bayes"""
 
@@ -197,7 +217,15 @@ t1=time.time()
 testpre=NB.predict(X_test)#.reshape(1,-1).tolist()[0]
 t2=time.time()
 time_interval=t2-t1
-print("time interval for indexing data:"+str(time_interval*1000)+" ms")
+print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
+
+from sklearn.externals import joblib
+joblib.dump(NB, "naive_bayes.model")
+model = joblib.load("naive_bayes.model")
+results = model.predict(X_test)
+print(results)
+print(Y_test)
 
 """- Decision Tree"""
 
@@ -217,7 +245,15 @@ t1=time.time()
 testpre=tree.predict(X_test)#.reshape(1,-1).tolist()[0]
 t2=time.time()
 time_interval=t2-t1
-print("time interval for indexing data:"+str(time_interval*1000)+" ms")
+print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
+
+from sklearn.externals import joblib
+joblib.dump(tree, "decision_tree.model")
+model = joblib.load("decision_tree.model")
+results = model.predict(X_test)
+print(results)
+print(Y_test)
 
 """- Random Forest"""
 
@@ -237,7 +273,15 @@ t1=time.time()
 testpre=forest.predict(X_test)#.reshape(1,-1).tolist()[0]
 t2=time.time()
 time_interval=t2-t1
-print("time interval for indexing data:"+str(time_interval*1000)+" ms")
+print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
+
+from sklearn.externals import joblib
+joblib.dump(forest, "random_forest.model")
+model = joblib.load("random_forest.model")
+results = model.predict(X_test)
+print(results)
+print(Y_test)
 
 """- DNN"""
 
@@ -253,10 +297,10 @@ import numpy as np
 import time
 t1=time.time()
 model = md.Sequential()
-model.add(lr.Dense(128,activation="relu"))
-model.add(lr.Dense(128,activation="relu"))
+model.add(lr.Dense(32,activation="relu"))
+model.add(lr.Dense(32,activation="relu"))
 # model.add(lr.Dense(32,activation="relu"))
-model.add(lr.Dropout(0.2))
+model.add(lr.Dropout(0.3))
 model.add(lr.Dense(100,activation="softmax"))
 model.compile(optimizer="adam",loss="categorical_crossentropy",metrics=["accuracy"])#compile the model
 model.fit(X_train, Y_train_NN, epochs=16, batch_size=32)#fit the model
@@ -269,7 +313,8 @@ t1=time.time()
 model.predict(X_test)
 t2=time.time()
 time_interval=t2-t1
-print("time interval for indexing data:"+str(time_interval*1000)+" ms")
+print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
 
 Y_test=np.argmax(model.predict(X_test), axis=-1)
 print(Y_test)
