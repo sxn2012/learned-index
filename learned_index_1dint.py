@@ -68,10 +68,10 @@ print("testing data size:",len(testkeys))
 
 trainpages=[]
 for ele in trainres:
-  trainpages.append(ele//100)
+  trainpages.append(int(ele)//100)
 testpages=[]
 for ele in testres:
-  testpages.append(ele//100)
+  testpages.append(int(ele)//100)
 
 import numpy as np
 X_train=np.array(trainkeys).reshape(-1,1)
@@ -719,7 +719,7 @@ def test():
     '''
     test class `BTree` and class `BTreeNode`
     '''
-    tree = BTree(3)
+    tree = BTree(10)
     # tree.insert(11)
     # tree.insert(3)
     # tree.insert(1)
@@ -827,31 +827,38 @@ def test():
       count_error+=1
     begin=0
     end=len(trainkeys)-1
-    while finding_res!=correct_res:
+    # while finding_res!=correct_res:
       
-      # # print(finding_res,correct_res)
-      # if count_error>30:
-      #   return
-      if finding_res<correct_res:
-        begin=estimated_loc
-        # end=len(trainkeys)-1
-        estimated_loc=(begin+end)//2
-        if estimated_loc>=0 and estimated_loc<len(trainkeys):
-          finding_res=trainkeys[estimated_loc]
-        elif estimated_loc<0:
-          finding_res=trainkeys[0]
-        else:
-          finding_res=trainkeys[len(trainkeys)-1]
+    #   # # print(finding_res,correct_res)
+    #   # if count_error>30:
+    #   #   return
+    #   if finding_res<correct_res:
+    #     begin=estimated_loc
+    #     # end=len(trainkeys)-1
+    #     estimated_loc=(begin+end)//2
+    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
+    #       finding_res=trainkeys[estimated_loc]
+    #     elif estimated_loc<0:
+    #       finding_res=trainkeys[0]
+    #     else:
+    #       finding_res=trainkeys[len(trainkeys)-1]
+    #   else:
+    #     # begin=0
+    #     end=estimated_loc
+    #     estimated_loc=(begin+end)//2
+    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
+    #       finding_res=trainkeys[estimated_loc]
+    #     elif estimated_loc<0:
+    #       finding_res=trainkeys[0]
+    #     else:
+    #       finding_res=trainkeys[len(trainkeys)-1]
+    i=begin
+    while i<=end:
+      # print(i,end)
+      if finding_res==trainkeys[i]:
+        break
       else:
-        # begin=0
-        end=estimated_loc
-        estimated_loc=(begin+end)//2
-        if estimated_loc>=0 and estimated_loc<len(trainkeys):
-          finding_res=trainkeys[estimated_loc]
-        elif estimated_loc<0:
-          finding_res=trainkeys[0]
-        else:
-          finding_res=trainkeys[len(trainkeys)-1]
+        i=i+1
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
@@ -888,7 +895,7 @@ import math
 import time
 def test():
   t1=time.time()
-  reg = Ridge(alpha=1.0)
+  reg = Ridge(alpha=0.1)
   reg.fit(X_train,Y_train)
   t2=time.time()
   time_interval=t2-t1
@@ -925,31 +932,37 @@ def test():
       count_error+=1
     begin=0
     end=len(trainkeys)-1
-    while finding_res!=correct_res:
+    # while finding_res!=correct_res:
       
-      # # print(finding_res,correct_res)
-      # if count_error>30:
-      #   return
-      if finding_res<correct_res:
-        begin=estimated_loc
-        # end=len(trainkeys)-1
-        estimated_loc=(begin+end)//2
-        if estimated_loc>=0 and estimated_loc<len(trainkeys):
-          finding_res=trainkeys[estimated_loc]
-        elif estimated_loc<0:
-          finding_res=trainkeys[0]
-        else:
-          finding_res=trainkeys[len(trainkeys)-1]
+    #   # # print(finding_res,correct_res)
+    #   # if count_error>30:
+    #   #   return
+    #   if finding_res<correct_res:
+    #     begin=estimated_loc
+    #     # end=len(trainkeys)-1
+    #     estimated_loc=(begin+end)//2
+    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
+    #       finding_res=trainkeys[estimated_loc]
+    #     elif estimated_loc<0:
+    #       finding_res=trainkeys[0]
+    #     else:
+    #       finding_res=trainkeys[len(trainkeys)-1]
+    #   else:
+    #     # begin=0
+    #     end=estimated_loc
+    #     estimated_loc=(begin+end)//2
+    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
+    #       finding_res=trainkeys[estimated_loc]
+    #     elif estimated_loc<0:
+    #       finding_res=trainkeys[0]
+    #     else:
+    #       finding_res=trainkeys[len(trainkeys)-1]
+    i=begin
+    while i<=end:
+      if finding_res==trainkeys[i]:
+        break
       else:
-        # begin=0
-        end=estimated_loc
-        estimated_loc=(begin+end)//2
-        if estimated_loc>=0 and estimated_loc<len(trainkeys):
-          finding_res=trainkeys[estimated_loc]
-        elif estimated_loc<0:
-          finding_res=trainkeys[0]
-        else:
-          finding_res=trainkeys[len(trainkeys)-1]
+        i=i+1
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
@@ -985,16 +998,17 @@ import numpy as np
 from sklearn.metrics import classification_report
 def test():
   t1=time.time()
-  neigh = KNeighborsClassifier(n_neighbors=9)
+  neigh = KNeighborsClassifier(n_neighbors=2)
   neigh.fit(X_train,Z_train)
   t2=time.time()
   time_interval=t2-t1
   # devpre=neigh.predict(X_dev)#.reshape(1,-1).tolist()[0]
   # print(classification_report(Y_dev,devpre))
-  print("time interval for building model:"+str(time_interval*1000)+" ms")
+  # print("time interval for building model:"+str(time_interval*1000)+" ms")
   ret1=time_interval*1000
   t1=time.time()
   testpre=neigh.predict(X_test).reshape(1,-1).tolist()[0]
+  # print(testpre)
   t2=time.time()
   time_interval=t2-t1
   print("time interval for indexing data :"+str(time_interval*1000)+" ms")
@@ -1004,7 +1018,7 @@ def test():
   t1=time.time()
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
-    correct_res=testkeys[i]
+    correct_res=testres[i]
     if correct_res in range(estimated_page*100,estimated_page*100+100):
       pass
     else:
@@ -1020,6 +1034,7 @@ def test():
         begin=middle
       else:
         end=middle
+      # print("begin="+str(begin)+",end="+str(end))
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
@@ -1074,7 +1089,7 @@ def test():
   t1=time.time()
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
-    correct_res=testkeys[i]
+    correct_res=testres[i]
     if correct_res in range(estimated_page*100,estimated_page*100+100):
       pass
     else:
@@ -1125,7 +1140,7 @@ import numpy as np
 from sklearn.metrics import classification_report
 def test():
   t1=time.time()
-  dtree = tree.DecisionTreeClassifier()
+  dtree = tree.DecisionTreeClassifier(max_depth=12)
   dtree.fit(X_train,Z_train)
   t2=time.time()
   time_interval=t2-t1
@@ -1139,6 +1154,95 @@ def test():
   time_interval=t2-t1
   print("time interval for indexing data :"+str(time_interval*1000)+" ms")
   print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
+  ret2=time_interval*1000
+  ret3=time_interval/len(testkeys)*1000
+  t1=time.time()
+  for i in range(0,len(testpre)):
+    estimated_page=testpre[i]
+    correct_res=testres[i]
+    if correct_res in range(estimated_page*100,estimated_page*100+100):
+      pass
+    else:
+      estimated_page=correct_res//100
+    begin=estimated_page*100
+    end=estimated_page*100+100
+    while begin<end and end-begin>1:
+      middle=(begin+end)//2
+      if middle==correct_res:
+        estimated_loc=middle
+        break
+      elif middle<correct_res:
+        begin=middle
+      else:
+        end=middle
+  t2=time.time()
+  time_interval=t2-t1
+  print("time interval for error correction :"+str(time_interval*1000)+" ms")
+  print("average time interval for error correction :"+str(time_interval/len(testkeys)*1000)+" ms")
+  ret4=time_interval*1000
+  ret5=time_interval/len(testkeys)*1000
+  return (ret1,ret2,ret3,ret4,ret5)
+avg_a=0.0
+avg_b=0.0
+avg_c=0.0
+avg_d=0.0
+avg_e=0.0
+counting=20
+for i in range(0,20):
+  (a,b,c,d,e)=test()
+  avg_a+=a
+  avg_b+=b
+  avg_c+=c
+  avg_d+=d
+  avg_e+=e
+avg_a=avg_a/counting
+avg_b=avg_b/counting
+avg_c=avg_c/counting
+avg_d=avg_d/counting
+avg_e=avg_e/counting
+print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
+
+"""## Neural Networks"""
+
+
+
+import numpy as np
+temp=Z_train.reshape(1,-1)
+T_train=np.zeros((temp.size, temp.max()+1))
+T_train[np.arange(temp.size),temp] = 1
+print(T_train)
+
+import tensorflow as tf
+from tensorboard.plugins.hparams import api
+from keras import models as md
+from keras import layers as lr
+import time
+import numpy as np
+from sklearn.metrics import classification_report
+def test():
+  t1=time.time()
+  model = md.Sequential()
+  model.add(lr.Dense(128,activation="relu"))
+  model.add(lr.Dense(4,activation="relu"))
+  model.add(lr.Dense(32,activation="relu"))
+  model.add(lr.Dropout(0.2))
+  model.add(lr.Dense(temp.max()+1,activation="softmax"))
+  model.compile(optimizer="adam",loss="categorical_crossentropy",metrics=["accuracy"])#compile the model
+  model.fit(X_train, T_train, epochs=16, batch_size=32)#fit the model
+  t2=time.time()
+  time_interval=t2-t1
+  # devpre=tree.predict(X_dev)#.reshape(1,-1).tolist()[0]
+  # print(classification_report(Y_dev,devpre))
+  print("time interval for building model:"+str(time_interval*1000)+" ms")
+  ret1=time_interval*1000
+  t1=time.time()
+  testpre=model.predict(X_test)#.reshape(1,-1).tolist()[0]
+  print(testpre[0])
+  t2=time.time()
+  time_interval=t2-t1
+  print("time interval for indexing data :"+str(time_interval*1000)+" ms")
+  print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
+  return
   ret2=time_interval*1000
   ret3=time_interval/len(testkeys)*1000
   t1=time.time()
