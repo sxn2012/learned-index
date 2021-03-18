@@ -1,0 +1,5 @@
+https://archive.ics.uci.edu/ml/datasets/Audit+Data#
+https://archive.ics.uci.edu/ml/datasets/Cryotherapy+Dataset+#
+https://archive.ics.uci.edu/ml/datasets/Beijing+PM2.5+Data
+https://archive.ics.uci.edu/ml/datasets/Online+Retail
+https://archive.ics.uci.edu/ml/datasets/Travel+Reviews
