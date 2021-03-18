@@ -816,7 +816,7 @@ def test():
   count_error=0
   for i in range(0,len(testpre)):
     estimated_loc=testpre[i]
-    correct_res=testkeys[i]
+    correct_res=testres[i]
     if estimated_loc>=0 and estimated_loc<len(trainkeys):
       finding_res=trainkeys[estimated_loc]
     elif estimated_loc<0:
@@ -921,7 +921,7 @@ def test():
   count_error=0
   for i in range(0,len(testpre)):
     estimated_loc=testpre[i]
-    correct_res=testkeys[i]
+    correct_res=testres[i]
     if estimated_loc>=0 and estimated_loc<len(trainkeys):
       finding_res=trainkeys[estimated_loc]
     elif estimated_loc<0:
