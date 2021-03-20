@@ -1204,13 +1204,12 @@ print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
 """## Neural Networks"""
 
-
-
 import numpy as np
 temp=Z_train.reshape(1,-1)
 T_train=np.zeros((temp.size, temp.max()+1))
 T_train[np.arange(temp.size),temp] = 1
 print(T_train)
+print(X_train.shape)
 
 import tensorflow as tf
 from tensorboard.plugins.hparams import api
@@ -1222,10 +1221,10 @@ from sklearn.metrics import classification_report
 def test():
   t1=time.time()
   model = md.Sequential()
+  model.add(lr.Dense(1,activation="relu"))
+  # model.add(lr.Dense(4,activation="relu"))
   model.add(lr.Dense(128,activation="relu"))
-  model.add(lr.Dense(4,activation="relu"))
-  model.add(lr.Dense(32,activation="relu"))
-  model.add(lr.Dropout(0.2))
+  # model.add(lr.Dropout(0.2))
   model.add(lr.Dense(temp.max()+1,activation="softmax"))
   model.compile(optimizer="adam",loss="categorical_crossentropy",metrics=["accuracy"])#compile the model
   model.fit(X_train, T_train, epochs=16, batch_size=32)#fit the model
@@ -1237,18 +1236,19 @@ def test():
   ret1=time_interval*1000
   t1=time.time()
   testpre=model.predict(X_test)#.reshape(1,-1).tolist()[0]
-  print(testpre[0])
+  testpre=np.argmax(testpre,axis=1)
+  # print(testpre)
   t2=time.time()
   time_interval=t2-t1
   print("time interval for indexing data :"+str(time_interval*1000)+" ms")
   print("average time interval for indexing data :"+str(time_interval/len(testkeys)*1000)+" ms")
-  return
+  # return
   ret2=time_interval*1000
   ret3=time_interval/len(testkeys)*1000
   t1=time.time()
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
-    correct_res=testkeys[i]
+    correct_res=testres[i]
     if correct_res in range(estimated_page*100,estimated_page*100+100):
       pass
     else:
