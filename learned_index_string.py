@@ -1029,7 +1029,7 @@ def test():
   model = md.Sequential()
   model.add(lr.Dense(300,activation="relu"))
   # model.add(lr.Dense(4,activation="relu"))
-  # model.add(lr.Dense(128,activation="relu"))
+  model.add(lr.Dense(128,activation="relu"))
   # model.add(lr.Dropout(0.2))
   model.add(lr.Dense(temp.max()+1,activation="softmax"))
   model.compile(optimizer="adam",loss="categorical_crossentropy",metrics=["accuracy"])#compile the model
