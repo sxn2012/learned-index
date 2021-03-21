@@ -114,9 +114,9 @@ import warnings
 from sklearn.exceptions import DataConversionWarning
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
-"""## Build Models
+"""# Build Models
 
-### B-Tree
+## B-Tree
 """
 
 import time
@@ -585,7 +585,7 @@ if __name__ == '__main__':
 else:
     pass
 
-"""### Linear Regression"""
+"""## Linear Regression"""
 
 from sklearn.linear_model import LinearRegression
 import numpy as np
@@ -691,7 +691,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Ridge Regression"""
+"""## Ridge Regression"""
 
 from sklearn.linear_model import Ridge
 import numpy as np
@@ -795,7 +795,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Naive Bayes"""
+"""## Naive Bayes"""
 
 from sklearn.naive_bayes import GaussianNB
 import time
@@ -865,7 +865,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### KNN"""
+"""## KNN"""
 
 from sklearn.neighbors import KNeighborsClassifier
 import time
@@ -937,7 +937,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Decision Tree"""
+"""## Decision Tree"""
 
 from sklearn import tree
 import time
@@ -1007,7 +1007,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Neural Networks"""
+"""## Neural Networks"""
 
 import numpy as np
 temp=Z_train.reshape(1,-1)
