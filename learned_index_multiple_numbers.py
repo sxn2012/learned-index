@@ -68,9 +68,9 @@ import warnings
 from sklearn.exceptions import DataConversionWarning
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
-"""## Build Models
+"""# Build Models
 
-### B-Tree
+## B-Tree
 """
 
 import time
@@ -539,7 +539,7 @@ if __name__ == '__main__':
 else:
     pass
 
-"""### Linear Regression"""
+"""## Linear Regression"""
 
 from sklearn.linear_model import LinearRegression
 import numpy as np
@@ -645,7 +645,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Ridge Regression"""
+"""## Ridge Regression"""
 
 from sklearn.linear_model import Ridge
 import numpy as np
@@ -654,7 +654,7 @@ import math
 import time
 def test():
   t1=time.time()
-  reg = Ridge(alpha=0.1)
+  reg = Ridge(alpha=1.0)
   reg.fit(X_train,Y_train)
   t2=time.time()
   time_interval=t2-t1
@@ -749,7 +749,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Naive Bayes"""
+"""## Naive Bayes"""
 
 from sklearn.naive_bayes import GaussianNB
 import time
@@ -819,7 +819,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### KNN"""
+"""## KNN"""
 
 from sklearn.neighbors import KNeighborsClassifier
 import time
@@ -827,7 +827,7 @@ import numpy as np
 from sklearn.metrics import classification_report
 def test():
   t1=time.time()
-  neigh = KNeighborsClassifier(n_neighbors=2)
+  neigh = KNeighborsClassifier(n_neighbors=9)
   neigh.fit(X_train,Z_train)
   t2=time.time()
   time_interval=t2-t1
@@ -891,7 +891,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Decision Tree"""
+"""## Decision Tree"""
 
 from sklearn import tree
 import time
@@ -899,7 +899,7 @@ import numpy as np
 from sklearn.metrics import classification_report
 def test():
   t1=time.time()
-  dtree = tree.DecisionTreeClassifier(max_depth=None)
+  dtree = tree.DecisionTreeClassifier(max_depth=12)
   dtree.fit(X_train,Z_train)
   t2=time.time()
   time_interval=t2-t1
@@ -961,7 +961,7 @@ avg_d=avg_d/counting
 avg_e=avg_e/counting
 print("average times (ms):",avg_a,avg_b,avg_c,avg_d,avg_e)
 
-"""### Neural Networks"""
+"""## Neural Networks"""
 
 import numpy as np
 temp=Z_train.reshape(1,-1)

@@ -1,0 +1,3 @@
+https://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset
+https://archive.ics.uci.edu/ml/datasets/BlogFeedback
+https://archive.ics.uci.edu/ml/datasets/Dry+Bean+Dataset
