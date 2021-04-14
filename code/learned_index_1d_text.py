@@ -11,16 +11,57 @@ Original file is located at
 
 !python3 -m spacy download en_core_web_md
 
+!pip install keras-word-char-embd
+
+!pip install chars2vec
+
 import spacy
 # Load the spacy model that you have installed
 nlp = spacy.load('en_core_web_md')
 # process a sentence using the model
-doc = nlp("This is some text that I am processing with Spacy")
+doc = nlp("https://colab.research.google.com/drive/1QhLsbeYiJSr838LQkCDRT_cayGEnBabU#scrollTo=5b3UTfSbifEY")
+# nlp("This is some text that I am processing with Spacy")
 # It's that simple - all of the vectors and words are assigned after this point
 # Get the vector for 'text':
-doc[3].vector
+# doc[3].vector
 # Get the mean vector for the entire sentence (useful for sentence classification etc.)
-# doc.vector
+doc.vector
+
+from keras_wc_embd import get_dicts_generator
+
+sentences = [
+    ['All', 'work', 'and', 'no', 'play'],
+    ['makes', 'Jack', 'a', 'dull', 'boy', '.'],
+]
+dict_generator = get_dicts_generator(
+    word_min_freq=2,
+    char_min_freq=2,
+    word_ignore_case=False,
+    char_ignore_case=False,
+)
+for sentence in sentences:
+    dict_generator(sentence)
+
+word_dict, char_dict, max_word_len = dict_generator(return_dict=True)
+
+import chars2vec
+import sklearn.decomposition
+import matplotlib.pyplot as plt
+
+# Load Inutition Engineering pretrained model
+# Models names: 'eng_50', 'eng_100', 'eng_150' 'eng_200', 'eng_300'
+c2v_model = chars2vec.load_model('eng_300')
+
+words = ['Natural', 'Language', 'Understanding',
+         'Naturael', 'Longuge', 'Updderctundjing',
+         'Motural', 'Lamnguoge', 'Understaating',
+         'Naturrow', 'Laguage', 'Unddertandink',
+         'Nattural', 'Languagge', 'Umderstoneding',"123000"]
+
+# Create word embeddings
+word_embeddings = c2v_model.vectorize_words(words)
+
+word_embeddings
 
 """# Read dataset
 
@@ -92,6 +133,11 @@ for ele in trainkeys:
 testkeys_emb=[]
 for ele in testkeys:
   testkeys_emb.append(pretrain(ele).vector)
+
+import chars2vec
+pretrain = chars2vec.load_model('eng_300')
+trainkeys_emb = pretrain.vectorize_words(trainkeys)
+testkeys_emb = pretrain.vectorize_words(testkeys)
 
 trainpages=[]
 for ele in trainres:
@@ -623,47 +669,47 @@ def test():
     estimated_loc=testpre[i]
     correct_res=testres[i]
     if estimated_loc>=0 and estimated_loc<len(trainkeys):
-      finding_res=trainkeys[estimated_loc]
+      finding_res=trainres[estimated_loc]
     elif estimated_loc<0:
-      finding_res=trainkeys[0]
+      finding_res=trainres[0]
     else:
-      finding_res=trainkeys[len(trainkeys)-1]
+      finding_res=trainres[len(trainkeys)-1]
     if finding_res!=correct_res:
       count_error+=1
     begin=0
     end=len(trainkeys)-1
-    # while finding_res!=correct_res:
+    while finding_res!=correct_res and abs(finding_res-correct_res)>1:
       
-    #   # # print(finding_res,correct_res)
-    #   # if count_error>30:
-    #   #   return
-    #   if finding_res<correct_res:
-    #     begin=estimated_loc
-    #     # end=len(trainkeys)-1
-    #     estimated_loc=(begin+end)//2
-    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
-    #       finding_res=trainkeys[estimated_loc]
-    #     elif estimated_loc<0:
-    #       finding_res=trainkeys[0]
-    #     else:
-    #       finding_res=trainkeys[len(trainkeys)-1]
-    #   else:
-    #     # begin=0
-    #     end=estimated_loc
-    #     estimated_loc=(begin+end)//2
-    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
-    #       finding_res=trainkeys[estimated_loc]
-    #     elif estimated_loc<0:
-    #       finding_res=trainkeys[0]
-    #     else:
-    #       finding_res=trainkeys[len(trainkeys)-1]
-    i=begin
-    while i<=end:
-      # print(i,end)
-      if finding_res==trainkeys[i]:
-        break
+      # print(finding_res,correct_res)
+      # if count_error>30:
+      #   return
+      if finding_res<correct_res:
+        begin=estimated_loc
+        # end=len(trainkeys)-1
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
       else:
-        i=i+1
+        # begin=0
+        end=estimated_loc
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
+    # i=begin
+    # while i<=end:
+    #   # print(i,end)
+    #   if finding_res==trainkeys[i]:
+    #     break
+    #   else:
+    #     i=i+1
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
@@ -700,7 +746,7 @@ import math
 import time
 def test():
   t1=time.time()
-  reg = Ridge(alpha=0.1)
+  reg = Ridge(alpha=1.0)
   reg.fit(X_train,Y_train)
   t2=time.time()
   time_interval=t2-t1
@@ -728,46 +774,47 @@ def test():
     estimated_loc=testpre[i]
     correct_res=testres[i]
     if estimated_loc>=0 and estimated_loc<len(trainkeys):
-      finding_res=trainkeys[estimated_loc]
+      finding_res=trainres[estimated_loc]
     elif estimated_loc<0:
-      finding_res=trainkeys[0]
+      finding_res=trainres[0]
     else:
-      finding_res=trainkeys[len(trainkeys)-1]
+      finding_res=trainres[len(trainkeys)-1]
     if finding_res!=correct_res:
       count_error+=1
     begin=0
     end=len(trainkeys)-1
-    # while finding_res!=correct_res:
+    while finding_res!=correct_res and abs(finding_res-correct_res)>1:
       
-    #   # # print(finding_res,correct_res)
-    #   # if count_error>30:
-    #   #   return
-    #   if finding_res<correct_res:
-    #     begin=estimated_loc
-    #     # end=len(trainkeys)-1
-    #     estimated_loc=(begin+end)//2
-    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
-    #       finding_res=trainkeys[estimated_loc]
-    #     elif estimated_loc<0:
-    #       finding_res=trainkeys[0]
-    #     else:
-    #       finding_res=trainkeys[len(trainkeys)-1]
-    #   else:
-    #     # begin=0
-    #     end=estimated_loc
-    #     estimated_loc=(begin+end)//2
-    #     if estimated_loc>=0 and estimated_loc<len(trainkeys):
-    #       finding_res=trainkeys[estimated_loc]
-    #     elif estimated_loc<0:
-    #       finding_res=trainkeys[0]
-    #     else:
-    #       finding_res=trainkeys[len(trainkeys)-1]
-    i=begin
-    while i<=end:
-      if finding_res==trainkeys[i]:
-        break
+      # print(finding_res,correct_res)
+      # if count_error>30:
+      #   return
+      if finding_res<correct_res:
+        begin=estimated_loc
+        # end=len(trainkeys)-1
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
       else:
-        i=i+1
+        # begin=0
+        end=estimated_loc
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
+    # i=begin
+    # while i<=end:
+    #   # print(i,end)
+    #   if finding_res==trainkeys[i]:
+    #     break
+    #   else:
+    #     i=i+1
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
@@ -820,28 +867,50 @@ def test():
   ret2=time_interval*1000
   ret3=time_interval/len(testkeys)*1000
   t1=time.time()
+  count_error=0
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
+    estimated_loc = estimated_page*100+50
     correct_res=testres[i]
-    if correct_res in range(estimated_page*100,estimated_page*100+100):
-      pass
+    if estimated_loc>=0 and estimated_loc<len(trainkeys):
+        finding_res=trainres[estimated_loc]
+    elif estimated_loc<0:
+        finding_res=trainres[0]
     else:
-      estimated_page=correct_res//100
-    begin=estimated_page*100
-    end=estimated_page*100+100
-    while begin<end:
-      middle=(begin+end)//2
-      if middle==correct_res:
-        estimated_loc=middle
-        break
-      elif middle<correct_res:
-        begin=middle
+        finding_res=trainres[len(trainkeys)-1]
+    if finding_res!=correct_res:
+      count_error+=1
+    begin=0
+    end=len(trainkeys)-1
+    while finding_res!=correct_res and abs(finding_res-correct_res)>1:
+      
+      # print(finding_res,correct_res)
+      # if count_error>30:
+      #   return
+      if finding_res<correct_res:
+        begin=estimated_loc
+        # end=len(trainkeys)-1
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
       else:
-        end=middle
+        # begin=0
+        end=estimated_loc
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
-  print("average time interval for error correction :"+str(time_interval/len(testkeys)*1000)+" ms")
+  print("average time interval for error correction :"+str(time_interval/count_error*1000)+" ms")
   ret4=time_interval*1000
   ret5=time_interval/len(testkeys)*1000
   return (ret1,ret2,ret3,ret4,ret5)
@@ -873,7 +942,7 @@ import numpy as np
 from sklearn.metrics import classification_report
 def test():
   t1=time.time()
-  neigh = KNeighborsClassifier(n_neighbors=2)
+  neigh = KNeighborsClassifier(n_neighbors=9)
   neigh.fit(X_train,Z_train)
   t2=time.time()
   time_interval=t2-t1
@@ -891,29 +960,50 @@ def test():
   ret2=time_interval*1000
   ret3=time_interval/len(testkeys)*1000
   t1=time.time()
+  count_error=0
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
+    estimated_loc = estimated_page*100+50
     correct_res=testres[i]
-    if correct_res in range(estimated_page*100,estimated_page*100+100):
-      pass
+    if estimated_loc>=0 and estimated_loc<len(trainkeys):
+        finding_res=trainres[estimated_loc]
+    elif estimated_loc<0:
+        finding_res=trainres[0]
     else:
-      estimated_page=correct_res//100
-    begin=estimated_page*100
-    end=estimated_page*100+100
-    while begin<end:
-      middle=(begin+end)//2
-      if middle==correct_res:
-        estimated_loc=middle
-        break
-      elif middle<correct_res:
-        begin=middle
+        finding_res=trainres[len(trainkeys)-1]
+    if finding_res!=correct_res:
+      count_error+=1
+    begin=0
+    end=len(trainkeys)-1
+    while finding_res!=correct_res and abs(finding_res-correct_res)>1:
+      
+      # print(finding_res,correct_res)
+      # if count_error>30:
+      #   return
+      if finding_res<correct_res:
+        begin=estimated_loc
+        # end=len(trainkeys)-1
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
       else:
-        end=middle
-      # print("begin="+str(begin)+",end="+str(end))
+        # begin=0
+        end=estimated_loc
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
-  print("average time interval for error correction :"+str(time_interval/len(testkeys)*1000)+" ms")
+  print("average time interval for error correction :"+str(time_interval/count_error*1000)+" ms")
   ret4=time_interval*1000
   ret5=time_interval/len(testkeys)*1000
   return (ret1,ret2,ret3,ret4,ret5)
@@ -945,7 +1035,7 @@ import numpy as np
 from sklearn.metrics import classification_report
 def test():
   t1=time.time()
-  dtree = tree.DecisionTreeClassifier(max_depth=None)
+  dtree = tree.DecisionTreeClassifier(max_depth=3)
   dtree.fit(X_train,Z_train)
   t2=time.time()
   time_interval=t2-t1
@@ -962,28 +1052,50 @@ def test():
   ret2=time_interval*1000
   ret3=time_interval/len(testkeys)*1000
   t1=time.time()
+  count_error=0
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
+    estimated_loc = estimated_page*100+50
     correct_res=testres[i]
-    if correct_res in range(estimated_page*100,estimated_page*100+100):
-      pass
+    if estimated_loc>=0 and estimated_loc<len(trainkeys):
+        finding_res=trainres[estimated_loc]
+    elif estimated_loc<0:
+        finding_res=trainres[0]
     else:
-      estimated_page=correct_res//100
-    begin=estimated_page*100
-    end=estimated_page*100+100
-    while begin<end and end-begin>1:
-      middle=(begin+end)//2
-      if middle==correct_res:
-        estimated_loc=middle
-        break
-      elif middle<correct_res:
-        begin=middle
+        finding_res=trainres[len(trainkeys)-1]
+    if finding_res!=correct_res:
+      count_error+=1
+    begin=0
+    end=len(trainkeys)-1
+    while finding_res!=correct_res and abs(finding_res-correct_res)>1:
+      
+      # print(finding_res,correct_res)
+      # if count_error>30:
+      #   return
+      if finding_res<correct_res:
+        begin=estimated_loc
+        # end=len(trainkeys)-1
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
       else:
-        end=middle
+        # begin=0
+        end=estimated_loc
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
-  print("average time interval for error correction :"+str(time_interval/len(testkeys)*1000)+" ms")
+  print("average time interval for error correction :"+str(time_interval/count_error*1000)+" ms")
   ret4=time_interval*1000
   ret5=time_interval/len(testkeys)*1000
   return (ret1,ret2,ret3,ret4,ret5)
@@ -1052,28 +1164,50 @@ def test():
   ret2=time_interval*1000
   ret3=time_interval/len(testkeys)*1000
   t1=time.time()
+  count_error=0
   for i in range(0,len(testpre)):
     estimated_page=testpre[i]
+    estimated_loc = estimated_page*100+50
     correct_res=testres[i]
-    if correct_res in range(estimated_page*100,estimated_page*100+100):
-      pass
+    if estimated_loc>=0 and estimated_loc<len(trainkeys):
+        finding_res=trainres[estimated_loc]
+    elif estimated_loc<0:
+        finding_res=trainres[0]
     else:
-      estimated_page=correct_res//100
-    begin=estimated_page*100
-    end=estimated_page*100+100
-    while begin<end:
-      middle=(begin+end)//2
-      if middle==correct_res:
-        estimated_loc=middle
-        break
-      elif middle<correct_res:
-        begin=middle
+        finding_res=trainres[len(trainkeys)-1]
+    if finding_res!=correct_res:
+      count_error+=1
+    begin=0
+    end=len(trainkeys)-1
+    while finding_res!=correct_res and abs(finding_res-correct_res)>1:
+      
+      # print(finding_res,correct_res)
+      # if count_error>30:
+      #   return
+      if finding_res<correct_res:
+        begin=estimated_loc
+        # end=len(trainkeys)-1
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
       else:
-        end=middle
+        # begin=0
+        end=estimated_loc
+        estimated_loc=(begin+end)//2
+        if estimated_loc>=0 and estimated_loc<len(trainkeys):
+          finding_res=trainres[estimated_loc]
+        elif estimated_loc<0:
+          finding_res=trainres[0]
+        else:
+          finding_res=trainres[len(trainkeys)-1]
   t2=time.time()
   time_interval=t2-t1
   print("time interval for error correction :"+str(time_interval*1000)+" ms")
-  print("average time interval for error correction :"+str(time_interval/len(testkeys)*1000)+" ms")
+  print("average time interval for error correction :"+str(time_interval/count_error*1000)+" ms")
   ret4=time_interval*1000
   ret5=time_interval/len(testkeys)*1000
   return (ret1,ret2,ret3,ret4,ret5)
