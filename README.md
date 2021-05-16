@@ -135,13 +135,7 @@ Alternatively, run [notebooks](https://github.com/sxn2012/learned-index/tree/not
 - Hyper-parameters affect some learned indexing models
 - Deep learning may perform better with the help of GPUs or TPUs
 
-## References
-
-Engineering, I. (2019). Chars2vec: character-based language model for handling real world texts.
-
-Honnibal, M., Montani, I., Van Landeghem, S., and Boyd, A. (2020). spaCy: Industrial-strength Natural Language Processing in Python.
-
-Kraska, T., Beutel, A., Chi, E. H., Dean, J., and Polyzotis, N. (2018). The case for learned index structures. In Proceedings of the 2018 International Conference on Management of Data, pages 489–504.
+More details can be seen in [Wiki](https://github.com/sxn2012/learned-index/wiki).
 
 ## Copyright
 
