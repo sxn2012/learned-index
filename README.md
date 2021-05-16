@@ -107,6 +107,8 @@ Then, upload the code in `code` folder to Google Colab;
 
 You can run the code on server now!
 
+Alternatively, run [notebooks](https://github.com/sxn2012/learned-index/tree/notebooks/notebooks) on Google Colab directly!
+
 ### File Function Descriptions
 
 - `code`: stores all code files in this research project
