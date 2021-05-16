@@ -79,8 +79,6 @@ So far, the researchers ...
     - only for learned models
     - using binary search
 
-
-
 ## Implementation Details
 
 ### Environments
