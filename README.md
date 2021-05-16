@@ -85,7 +85,7 @@ So far, the researchers ...
 
 ### Environments
 
-- Google Colab (with GPU/TPU) enabled
+- Google Colab (with GPU/TPU enabled)
 - Python 3.7
 - Scikit-learn
 - Tensorflow
