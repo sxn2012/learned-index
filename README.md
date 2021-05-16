@@ -133,7 +133,7 @@ You can run the code on server now!
 - Hyper-parameters affect some learned indexing models
 - Deep learning may perform better with the help of GPUs or TPUs
 
-##　References
+## References
 
 Engineering, I. (2019). Chars2vec: character-based language model for handling real world texts.
 
