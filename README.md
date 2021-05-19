@@ -137,4 +137,4 @@ The [notebooks](https://github.com/sxn2012/learned-index/tree/notebooks/notebook
 
 Copyright © 2021, [Xinnan SHEN](https://github.com/sxn2012), released under the [GPL-3.0 License](https://github.com/sxn2012/learned-index/blob/master/LICENSE).
 
-If you found this repository useful for your research, we appreciate you cite it.
+If you found this repository useful for your research, we appreciate that you cite it.

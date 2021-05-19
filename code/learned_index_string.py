@@ -2,7 +2,10 @@
 
 # Instructions
 
-
+print("Machine Learning Index Models, Copyright (C) 2021  Xinnan Shen")
+print("This program comes with ABSOLUTELY NO WARRANTY;")
+print("This is free software, and you are welcome to redistribute it under certain conditions")
+print("======================================================================================")
 
 import sys, getopt
 
