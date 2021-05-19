@@ -6,26 +6,12 @@ This repository is the implementation details of machine learning index models.
 ## Introduction
 
 - We have reproduced B-Tree and deep learning indexing models mentioned in Kraska et al. (2018) "The case for learned index structures".
-    - use a fully-connected neural network to build indexes
-    - try to run deep learning models on GPUs and TPUs
 - We have also used other learned models
-    - Linear Regression
-    - Naïve Bayes
-    - Decision Trees
-    - many others...
-
-- We have conducted experiments in many types of datasets
-    - build indexes on numbers
-        - single-column numbers
-        - multiple-column numbers
-    - build indexes on strings
-        - text strings: strings that can be split into words via spaces
-        - non-text strings: strings that cannot be divided into words
+- We have conducted experiments in many types of datasets (numbers, strings)
 - We have tuned hyper-parameters
-    - record the results of each experiments
-    - find out how these hyper-parameters affect each model's performance
 
-## Implementation Details
+
+## Usage
 
 ### Environments
 
