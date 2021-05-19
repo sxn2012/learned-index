@@ -22,16 +22,16 @@ This repository is the implementation details of machine learning index models.
 - Spacy
 - chars2vec
 
-Make sure you have installed these environments in your device. If you haven't install the packages, try running `pip install [package name]` to install them before you run the code.
+Make sure you have installed these environments in your device. If you haven't install the packages, try running `pip3 install [package name]` to install them before you run the code.
 
 If you want to run the learned indexing structures on string datasets, you should also execute the following command:
 
 ```shell
 python3 -m spacy download en_core_web_md
 
-pip install keras-word-char-embd
+pip3 install keras-word-char-embd
 
-pip install chars2vec
+pip3 install chars2vec
 ```
 
 ### Datasets
