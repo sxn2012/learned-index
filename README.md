@@ -93,7 +93,7 @@ If you want to index on strings, run the following command:
 
 - Examples:
 
-  `python .\code\learned_index_1d_number.py -d ".\dataset\single column number\random data\data_10k" -c 5 -m NN`
+  `python3 .\code\learned_index_1d_number.py -d ".\dataset\single column number\random data\data_10k" -c 5 -m NN`
 
   `python3 .\code\learned_index_nd_number.py -d ".\dataset\multiple column number\bike sharing data" -c 5 -p 70 -m DT`
 
