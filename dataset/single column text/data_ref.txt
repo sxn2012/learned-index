@@ -1,3 +1,0 @@
-https://archive.ics.uci.edu/ml/datasets/Paper+Reviews
-https://archive.ics.uci.edu/ml/datasets/Farm+Ads
-https://archive.ics.uci.edu/ml/datasets/Health+News+in+Twitter
