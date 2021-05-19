@@ -10,12 +10,15 @@ path = ''
 count = 0
 h_param = 0.0
 model_str = ''
+cmd = 0
 X_train=None
 Y_train=None
 Z_train=None
+R_train=None
 X_test=None
 Y_test=None
 Z_test=None
+R_test=None
 trainkeys = None
 trainpages = None
 trainres = None
@@ -28,17 +31,18 @@ def main(argv):
   global count
   global h_param
   global model_str
+  global cmd
   try:
-    opts, args = getopt.getopt(argv,"hd:c:p:m:",["directory=","count=","parameter=","model="])
+    opts, args = getopt.getopt(argv,"hd:c:p:m:e:",["directory=","count=","parameter=","model=","embedding="])
   except getopt.GetoptError:
-    print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name]")
+    print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name] -e [type]")
     exit(1)
   if len(opts) == 0:
-    print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name]")
+    print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name] -e [type]")
     exit(1)
   for opt, arg in opts:
     if opt == '-h':
-      print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name]")
+      print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name] -e [type]")
       exit()
     elif opt in ("-d", "--directory"):
       path = arg
@@ -48,34 +52,57 @@ def main(argv):
       h_param = float(arg)
     elif opt in ("-m", "--model"):
       model_str = arg
+    elif opt in ("-e", "--embedding"):
+      cmd = int(arg)
     else:
-      print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name]")
+      print("Usage: [filename].py -d [dataset path] -c [counting number] -p [hyper-parameter] -m [model name] -e [type]")
       exit(1)
 if __name__ == "__main__":
    main(sys.argv[1:])
 
-# Read dataset
 
-## read data
+# !python3 -m spacy download en_core_web_md
 
+# !pip install keras-word-char-embd
 
-
-
-def process():
-  import codecs
-  import os
+# !pip install chars2vec
+def process(command:int):
   global X_train
   global Y_train
   global Z_train
+  global R_train
   global X_test
   global Y_test
   global Z_test
+  global R_test
   global trainkeys 
   global trainpages 
   global trainres 
   global testkeys 
   global testpages 
   global testres 
+  # import spacy
+  # # Load the spacy model that you have installed
+  # nlp = spacy.load('en_core_web_md')
+
+
+  # import chars2vec
+  # import sklearn.decomposition
+  # import matplotlib.pyplot as plt
+
+  # # Load Inutition Engineering pretrained model
+  # # Models names: 'eng_50', 'eng_100', 'eng_150' 'eng_200', 'eng_300'
+  # c2v_model = chars2vec.load_model('eng_300')
+
+
+
+  """# Read dataset
+
+  ## read data
+  """
+
+  import codecs
+  import os
   # minkey=1000
   # maxkey=9999
   # keynum=3000
@@ -89,9 +116,8 @@ def process():
       temp=ele.split(",")
       if len(temp)!=2:
           continue
-      trainkeys.append(float(temp[0]))
+      trainkeys.append(temp[0])
       trainres.append(int(temp[1]))
-
   f=codecs.open(os.path.join(path,"data_test.csv"), "r", "utf-8")
   strlist=f.read().split("\n")
   f.close()
@@ -101,7 +127,7 @@ def process():
       temp=ele.split(",")
       if len(temp)!=2:
           continue
-      testkeys.append(float(temp[0]))
+      testkeys.append(temp[0])
       testres.append(int(temp[1]))
 
 
@@ -110,7 +136,26 @@ def process():
 
   print("testing data size:",len(testkeys))
 
-  """# Build Models"""
+  """## Data preprocessing"""
+  if command==1:
+    import spacy
+    # Load the spacy model that you have installed
+    pretrain = spacy.load('en_core_web_md')
+    trainkeys_emb=[]
+    # process a sentence using the model
+    for ele in trainkeys:
+      trainkeys_emb.append(pretrain(ele).vector)
+    testkeys_emb=[]
+    for ele in testkeys:
+      testkeys_emb.append(pretrain(ele).vector)
+  elif command==2:
+    import chars2vec
+    pretrain = chars2vec.load_model('eng_300')
+    trainkeys_emb = pretrain.vectorize_words(trainkeys)
+    testkeys_emb = pretrain.vectorize_words(testkeys)
+  else:
+    print("Error: Command Invalid")
+    sys.exit(1)
 
   trainpages=[]
   for ele in trainres:
@@ -120,10 +165,12 @@ def process():
     testpages.append(int(ele)//100)
 
   import numpy as np
-  X_train=np.array(trainkeys).reshape(-1,1)
+  R_train=np.array(trainkeys)
+  X_train=np.array(trainkeys_emb)
   Y_train=np.array(trainres).reshape(-1,1)
   Z_train=np.array(trainpages).reshape(-1,1)
-  X_test=np.array(testkeys).reshape(-1,1)
+  R_test=np.array(testkeys)
+  X_test=np.array(testkeys_emb)
   Y_test=np.array(testres).reshape(-1,1)
   Z_test=np.array(testpages).reshape(-1,1)
 
@@ -131,7 +178,7 @@ def process():
   from sklearn.exceptions import DataConversionWarning
   warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
-
+"""# Build Models
 
 """## B-Tree"""
 
@@ -1190,7 +1237,7 @@ def model_NN(counting:int):
   return
 
 
-process()
+process(cmd)
 
 print("==============Preperocess Completed============")
 
