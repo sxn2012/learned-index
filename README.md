@@ -3,6 +3,8 @@ This is my final research project of *Master of Science (Computer Science)* in *
 
 This repository is the implementation details of machine learning index models.
 
+**IMPORTANT: PLEASE FOLLOW THE LICENSE WHEN USING THIS REPOSITORY!**
+
 ## Introduction
 
 - We have reproduced B-Tree and deep learning indexing models mentioned in Kraska et al. (2018) "The case for learned index structures".
