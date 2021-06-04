@@ -117,8 +117,8 @@ The [notebooks](https://github.com/sxn2012/learned-index/tree/notebooks/notebook
 - `dataset`: stores all datasets that are used in this research project
 	- `single column number`: datasets of single column numbers
 	- `multiple column number`: datasets of multiple column numbers
-	- `single column text`: datasets of text strings
-	- `single column non-text`: datasets of non-text strings
+	- `text string`: datasets of text strings
+	- ` non-text string`: datasets of non-text strings
 - `img`: stores some of the figures from our experimental results
 
 ## Copyright
